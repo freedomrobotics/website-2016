@@ -1,0 +1,7 @@
+Options +FollowSymlinks -MultiViews
+RewriteEngine on
+
+RewriteOptions inherit
+
+Options -Indexes
+IndexIgnore *

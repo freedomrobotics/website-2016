@@ -1,0 +1,1 @@
+<link rel="canonical" href="https://alexcican.com/post/single-post">
