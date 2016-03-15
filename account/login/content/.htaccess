@@ -1,4 +1,7 @@
-Deny from All
+Options +FollowSymlinks -MultiViews
+RewriteEngine on
+
+RewriteOptions inherit
 
 Options -Indexes
 IndexIgnore *

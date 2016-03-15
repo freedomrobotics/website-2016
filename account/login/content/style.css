@@ -1,0 +1,50 @@
+#nav {
+	position: absolute;
+	width: 90px;
+	height: 90px;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+#nav div {
+	border-radius: 50%;
+}
+
+#nav div img {
+	transition: opacity 0.2s linear;
+}
+
+#nav_home {
+	position: absolute;
+	width: 30px;
+	height: 30px;
+	top: 10px;
+	left: 10px;
+	cursor: pointer;
+}
+
+#nav_home img {
+	position: absolute;
+	width: 30px;
+	height: 30px;
+	top: 0;
+	left: 0;
+}
+
+#nav_back {
+	position: absolute;
+	width: 60px;
+	height: 60px;
+	top: 30px;
+	left: 30px;
+	cursor: pointer;
+}
+
+#nav_back img {
+	position: absolute;
+	width: 60px;
+	height: 60px;
+	top: 0;
+	left: 0;
+}
