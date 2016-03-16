@@ -8,42 +8,33 @@
 	include($_SERVER['DOCUMENT_ROOT']."/includes/jsincludes.php");
 	includeJS("core:1.12.0", "", "", "", "", "", "1.6.16");
 	?>
+	<script type="text/javascript">
+	WebFont.load({
+		google: {
+			families: ['Roboto:300:latin']
+		}
+	});
+	</script>
 	<link href="./content/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<div id="nav" class="disableHighlight"> <!--The top navigation coolio stuff-->
-		<div id="nav_home" style="height: 30px; width: 30px;">
-			<img src="./img/homebutton.svg" style="z-index: 100; height: 30px; width: 30px;" alt="">
-			<img id="homeSVG" src="./img/homebuttonhover.svg" style="z-index: 101; opacity: 0; height: 30px; width: 30px;" alt="">
-		</div>
-		<div id="nav_back" style="height: 60px; width: 60px; top: 30px; left: 30px;">
-			<img src="./img/backarrow.svg" style="z-index: 100; height: 60px; width: 60px;" alt="">
-			<img id="backSVG" src="./img/backarrowhover.svg" style="z-index: 101; height: 60px; width: 60px; opacity: 0;" alt="">
-		</div>
-	</div>
-	<script type="text/javascript">
-	$("#nav_home").hover(function() {
-		$("#nav_home").animate({"height": "60px", "width": "60px"}, 200).children().animate({"height": "60px", "width": "60px"}, 200);
-		$("#nav_back").animate({"height": "30px", "width": "30px", "top": "60px", "left": "60px"}, 200).children().animate({"height": "30px", "width": "30px"}, 200);
-		$("#homeSVG").css("opacity", 1);
-	},function() {
-		$("#nav_home").animate({"height": "30px", "width": "30px"}, 200).children().animate({"height": "30px", "width": "30px"}, 200);
-		$("#nav_back").animate({"height": "60px", "width": "60px", "top": "30px", "left": "30px"}, 200).children().animate({"height": "60px", "width": "60px"}, 200);
-		$("#homeSVG").css("opacity", 0);
-	});
-	$("#nav_back").hover(function() {
-		$("#backSVG").css("opacity", 1);
-	},function() {
-		$("#backSVG").css("opacity", 0);
-	});
-	$("#nav_home").click(function() {
-		window.location = "http://trhcreations.tk/";
-	});
-	$("#nav_back").click(function() {
-		history.back(-1);
-	});
-	</script>
 	<div id="content">
-		
+		<div id="login_text"><p>Login</p></div>
+		<form action="./content/login.php" method="post">
+			<div id="form">
+				<div id="username">
+					<input type="text" name="LoginID" class="inputBox" value="Username/Email" onfocus="if(this.value==this.defaultValue)this.value='';" onblur="if(this.value=='')this.value=this.defaultValue;">
+				</div>
+				<div id="password">
+					<input type="text" name="Password" class="inputBox" value="Password" onfocus="if(this.value==this.defaultValue)this.value='';" onblur="if(this.value=='')this.value=this.defaultValue;">
+				</div>
+			</div>
+			<div id="extras">
+				<div id="error">This is a test error.</div>
+				<div id="rememberBox"><input type="checkbox" name="rememberMe" value="remember"> Remember for 30 days</div>
+				<div id="registerLinkDiv"><a href="/account/register" id="registerLink">Register?</a></div>
+			</div>
+			<div id="login_button"><input type="submit" value="Login"></div>
+		</form>
 	</div>
 </body>
