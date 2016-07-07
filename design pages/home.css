@@ -1,0 +1,66 @@
+/* BoomBah */
+ body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, p, blockquote, th, td {
+    margin:0;
+    padding:0;
+}
+
+html {
+	height: 100%;
+}
+
+div#top {
+
+}
+
+div#main {
+
+}
+
+div#bottom {
+
+}
+
+div#overlay {
+
+}
+
+/* modifiers/additions */
+.outline--lightgrey-1 {
+	outline: 1px solid #d4d4d4;
+}
+/* end section */
+
+
+/* compatibility */
+.float-container::after {
+	content: "";
+	display: block;
+	clear: both;
+}
+
+.float-left {
+	float: left;
+	text-align: left;
+}
+
+.float-right {
+	float: right;
+	text-align: right;
+}
+
+.center-float {
+	width: auto;
+	margin: 0 auto;
+	text-align: center;
+}
+/* end section */
+
+/* gravatar */
+.gravatar-60x60 {
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+}
+
+/* end section */
+
