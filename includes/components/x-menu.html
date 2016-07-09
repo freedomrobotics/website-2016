@@ -89,14 +89,32 @@ Custom property                                  | Description                  
     <style>
       /* local styles go here */
       :host {
+        text-align: center;
+      }
+      
+      :host[is-mobile] {
+        text-align: left;
+      }
+      
+      :host[is-tablet] {
+        text-align: right;
       }
       
       .x-menu-container {
-        background-color: red;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-end;
+        align-items: flex-end;
+        flex-basis: auto;
       }
       
       :host[is-mobile] .x-menu-container {
-        background-color: green;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-end;
+        align-items: flex-start;
+        flex-basis: auto;
+        align-content: flex-start;
       }
       
       :host[is-mobile] mobile-x-menu-button {
@@ -125,6 +143,14 @@ Polymer({
     properties: {
         mobileWhen: {type: String},
         tabletWhen: {type: String},
+        isMobile: {
+            type: Boolean,
+            observer: '_isMobileChanged'
+        },
+        isTablet: {
+            type: Boolean,
+            observer: '_isTabletChanged'
+        },
         
         _menuItems: {
             value: function() {

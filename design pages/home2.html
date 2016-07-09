@@ -26,7 +26,7 @@
     <script type="text/javascript">
     WebFontConfig = {
         google: {
-            families: ['Roboto:300:latin']
+            families: ['Roboto:400,300,300italic,400italic,500,500italic,700,700italic:latin']
         }
     };
     </script>
@@ -51,9 +51,10 @@
         <!-- Navigation -->
         <nav role="navigation">
         <x-menu mobile-when="(max-width: 800px)" tablet-when="(max-width: 1200px)">
-            <x-menu-item type="disabled">Home</x-menu-item>
+            <x-menu-item active>Home</x-menu-item>
             <x-menu-item>Teams
-                <x-menu-item type="sub-item" href="pamplemousse.html">Le Pamplemousse</x-menu-item>
+                <x-menu-item sub-item href="pamplemousse.html">Le Pamplemousse</x-menu-item>
+                <x-menu-item disabled href="pamplemousse.html">unknown team</x-menu-item>
             </x-menu-item>
             <x-menu-item href="about.html">About</x-menu-item>
             <x-menu-item href="donate.html">Donate</x-menu-item>

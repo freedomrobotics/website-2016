@@ -7,6 +7,7 @@ style properties are --x-menu-style: desktop-full, desktop-lite, mobile, each fo
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-icons/iron-icons.html">
 <link rel="import" href="../../iron-meta/iron-meta.html">
+<link rel="import" href="../../paper-styles/color.html">
 
 <!--
 *copied for reference to rewrite later*
@@ -88,23 +89,45 @@ Custom property                                  | Description                  
     <style>
       /* local styles go here */
       :host {
+        font-weight: 500;
       }
       
       :host[is-mobile] {
         color: purple;
       }
+      
+      .x-menu-item-wrapper {
+        padding: 0 5px;
+        width: 10em;
+        height: 2.5em;
+        text-align: center;
+        line-height: 2.5em;
+        font-size: 1.125em;
+      }
+      
+      :host[sub-item] .x-menu-item-wrapper {
+        font-size: .889em;
+      }
+      
+      .x-menu-item-wrapper:hover {
+        background-color: var(--google-grey-300);
+      }
+      
+      :host[active] {
+        background-color: var(--google-grey-300);
+      }
     </style>
     
     
     <template is="dom-if" if="{{_hasChildren}}">
-        <div class="x-menu-item">
+        <div class="x-menu-item-wrapper">
             <content></content>
         </div>
     </template>
     
     <template is="dom-if" if="{{!_hasChildren}}">
         <a href="{{href}}">
-            <div class="x-menu-item">
+            <div class="x-menu-item-wrapper">
                 <content></content>
             </div>
         </a>
@@ -117,7 +140,24 @@ Custom property                                  | Description                  
 Polymer({
     is: 'x-menu-item',
     properties: {
+        //link
         href: String,
+        
+        //flags
+        active: {
+            type: Boolean,
+            observer: '_activeFlagChanged'
+        },
+        disabled: {
+            type: Boolean,
+            observer: '_disabledFlagChanged'
+        },
+        subItem: {
+            type: Boolean,
+            observer: '_subItemFlagChanged'
+        },
+        
+        //flags for device type
         isMobile: {
             type: Boolean,
             observer: '_isMobileChanged'
@@ -126,7 +166,8 @@ Polymer({
             type: Boolean,
             observer: '_isTabletChanged'
         },
-
+        
+        //private vars
         _hasChildren: {
             type: Boolean,
         },
@@ -143,12 +184,16 @@ Polymer({
         if (childCount > 0) {
             this._hasChildren = true;
             //debug
-            console.log("x-menu-item: hasChildren " + this.hasChildren);
+            console.log("x-menu-item: hasChildren " + this._hasChildren);
             console.log("x-menu-item: " + childCount + " children found");
             // Insert iron-icon
             var expandArrow = document.createElement('iron-icon');
             var subMenuItem = this.queryEffectiveChildren('x-menu-item');
             Polymer.dom(this).insertBefore(expandArrow, subMenuItem);
+            //force sub-item flag on each sub item
+            for(var i=0; i < this._menuItems.length; i++){
+                this._menuItems[i].setAttribute('sub-item', "");
+            }
         }
         
         this._isMobileChanged();
