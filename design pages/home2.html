@@ -1,93 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Freedom High School Robotics - Home</title>
-	
-	<!--[if lt IE 9]>
-		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-	
-	<!-- Web Components Polyfill -->
-	<script src="https://polygit.org/components/webcomponentsjs/webcomponents.js"></script>
-	
-	<!-- Polymer -->
-	<link rel="import" href="/includes/polymer/polymer.html">
-	<link rel="import" href="/includes/paper-progress/paper-progress.html">
-	
-	<!-- Custom Polymer Components -->
-	<link rel="import" href="/includes/components/x-logo.html">
-	<link rel="import" href="/includes/components/x-menu.html">
-	<link rel="import" href="/includes/components/x-account-button.html">
-	<link rel="import" href="/includes/components/x-slideshow.html">
-	
-	<!-- Fonts -->
-	<script type="text/javascript">
-	WebFontConfig = {
-		google: {
-			families: ['Roboto:300:latin']
-		}
-	};
-	</script>
-	
-	<!-- External Libraries -->
-	<!--
-		includeJS($JQUERY, $ANGULAR, $DOJO, $MOO, $SPF, $THREE, $WEBFONT)
-		includeJS("core:1.12.0", "", "", "", "", "", "1.6.16");
-	-->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js" async></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js" async></script>
-	
-	<!-- Styling -->
-	<link href="home2.css" rel="stylesheet" />
-	<link rel="import" href="home2-custom-css.html">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Freedom High School Robotics - Home</title>
+    
+    <!--[if lt IE 9]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <!-- Web Components Polyfill -->
+    <script src="https://polygit.org/components/webcomponentsjs/webcomponents.js"></script>
+    
+    <!-- Polymer -->
+    <link rel="import" href="/includes/polymer/polymer.html">
+    <link rel="import" href="/includes/paper-progress/paper-progress.html">
+    
+    <!-- Custom Polymer Components -->
+    <link rel="import" href="/includes/components/x-logo.html">
+    <link rel="import" href="/includes/components/x-menu.html">
+    <link rel="import" href="/includes/components/x-account-button.html">
+    <link rel="import" href="/includes/components/x-slideshow.html">
+    
+    <!-- Fonts -->
+    <script type="text/javascript">
+    WebFontConfig = {
+        google: {
+            families: ['Roboto:300:latin']
+        }
+    };
+    </script>
+    
+    <!-- External Libraries -->
+    <!--
+        includeJS($JQUERY, $ANGULAR, $DOJO, $MOO, $SPF, $THREE, $WEBFONT)
+        includeJS("core:1.12.0", "", "", "", "", "", "1.6.16");
+    -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js" async></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js" async></script>
+    
+    <!-- Styling -->
+    <link href="home2.css" rel="stylesheet" />
+    <link rel="import" href="home2-custom-css.html">
 </head>
 <body>
-	<paper-progress value="40" secondary-progress="80" class="blue"></paper-progress>
-	<header>
-		<!-- LOGO -->
-		<x-logo type="header" href="home2.html" src=""></x-logo>
-		<!-- Navigation -->
-		<nav role="navigation">
-		<x-menu>
-			<x-menu-item type="disabled">Home</x-menu-item>
-			<x-menu-item href="teams.html">Teams
-				<x-menu-item type="sub-item" href="pamplemousse.html">Le Pamplemousse</x-menu-item>
-			</x-menu-item>
-			<x-menu-item href="about.html">About</x-menu-item>
-			<x-menu-item href="donate.html">Donate</x-menu-item>
-		</x-menu>
-		</nav>
-		<!-- Account Stuff -->
-		<div id="account-button" class="gravatar-60x60 outline--lightgrey-1">
-			<img src="https://www.gravatar.com/avatar/?d=mm&s=60" />
-		</div>
-	</header>
-	<div id="main">
-		<!-- Main section -->
-		<!-- Slideshow Custom Tag -->
-		<x-slideshow type="full-width">
-			<img alt="Members of Team Le Pamplemousse blah blah blah blah" />
-			<img alt="Members of Team Le Pamplemousse blargh blargh blargh blargh" />
-			<img alt="Members of Team Le Pamplemousse bleh bleh bleh bleh" />
-		</x-slideshow>
-		<!-- Main content -->
-		<article>
-			<p>This is SPARTA!!!<br>err...<br>well...<br>actually...</p>
-			<p>Brexit.</p>
-		</article>
-	</div>
-	<footer>
-		<!-- Footer -->
-		<!-- bottom information -->
-		<ul>
-			<li>stuffffffff</li>
-		</ul>
-		<!-- attributes and stuff -->
-		<section id="license">
-			<p><a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br>except where otherwise noted.</p>
-			<p>Designed and coded by Adam Li.</p>
-		</section>
-	</footer>
+    <paper-progress value="40" secondary-progress="80" class="blue"></paper-progress>
+    <header>
+        <!-- LOGO -->
+        <x-logo type="header" href="home2.html" src=""></x-logo>
+        <!-- Navigation -->
+        <nav role="navigation">
+        <x-menu mobile-when="(max-width: 800px)" tablet-when="(max-width: 1200px)">
+            <x-menu-item type="disabled">Home</x-menu-item>
+            <x-menu-item>Teams
+                <x-menu-item type="sub-item" href="pamplemousse.html">Le Pamplemousse</x-menu-item>
+            </x-menu-item>
+            <x-menu-item href="about.html">About</x-menu-item>
+            <x-menu-item href="donate.html">Donate</x-menu-item>
+        </x-menu>
+        </nav>
+        <!-- Account Stuff -->
+        <div id="account-button" class="gravatar-60x60 outline--lightgrey-1">
+            <img src="https://www.gravatar.com/avatar/?d=mm&s=60" />
+        </div>
+    </header>
+    <div id="main">
+        <!-- Main section -->
+        <!-- Slideshow Custom Tag -->
+        <x-slideshow type="full-width">
+            <img alt="Members of Team Le Pamplemousse blah blah blah blah" />
+            <img alt="Members of Team Le Pamplemousse blargh blargh blargh blargh" />
+            <img alt="Members of Team Le Pamplemousse bleh bleh bleh bleh" />
+        </x-slideshow>
+        <!-- Main content -->
+        <article>
+            <p>This is SPARTA!!!<br>err...<br>well...<br>actually...</p>
+            <p>Brexit.</p>
+        </article>
+    </div>
+    <footer>
+        <!-- Footer -->
+        <!-- bottom information -->
+        <ul>
+            <li>stuffffffff</li>
+        </ul>
+        <!-- attributes and stuff -->
+        <section id="license">
+            <p><a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br>except where otherwise noted.</p>
+            <p>Designed and coded by Adam Li.</p>
+        </section>
+    </footer>
 </body>
 </html>

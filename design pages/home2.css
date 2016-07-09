@@ -5,62 +5,62 @@
 }
 
 html {
-	height: 100%;
+    height: 100%;
 }
 
 body {
-	font-family: arial;
+    font-family: arial;
 }
 
 .wf-roboto-n3-active body {
-	font-family: "roboto";
+    font-family: "roboto";
 }
 
 body > header {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: center;
-	align-items: flex-end;
-	flex-basis: auto;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: flex-end;
+    flex-basis: auto;
 }
 
 body > header > x-logo {
-	flex-grow: 0;
-	width: 400px;
-	height: 100px;
+    flex-grow: 0;
+    width: 400px;
+    height: 100px;
 }
 
 body > header > nav {
-	flex-grow: 1;
-	text-align: right;
+    flex-grow: 1;
+    text-align: right;
 }
 
 body > header > #account-button {
-	flex-grow: 0;
+    flex-grow: 0;
 }
 
 #main {
-	
+    
 }
 
 body > footer {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: center;
-	align-items: flex-end;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: flex-end;
 }
 
 /* modifiers/additions */
 .outline--lightgrey-1 {
-	outline: 1px solid #d4d4d4;
+    outline: 1px solid #d4d4d4;
 }
 /* end section */
 
 /* gravatar */
 .gravatar-60x60 {
-	width: 60px;
-	height: 60px;
-	overflow: hidden;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
 }
 
 /* end section */

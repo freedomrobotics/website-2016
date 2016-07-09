@@ -1,10 +1,13 @@
 <!--
 Menu for Website
 
-Class properties are desktop-full, desktop-lite, mobile, each for each platform
+mobile-when="#insert css media query#"
+e.g. mobile-when="(min-width: 400px;)"
 -->
 
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-media-query/iron-media-query.html">
+<link rel="import" href="x-menu/x-menu-item.html">
 
 <!--
 *copied for reference to rewrite later*
@@ -87,13 +90,91 @@ Custom property                                  | Description                  
       /* local styles go here */
       :host {
       }
+      
+      .x-menu-container {
+        background-color: red;
+      }
+      
+      :host[is-mobile] .x-menu-container {
+        background-color: green;
+      }
+      
+      :host[is-mobile] mobile-x-menu-button {
+        display: block;
+      }
     </style>
     <!-- local DOM goes here -->
+    <div class="mobile-x-menu-button">
+        
+    </div>
+    
+    <iron-media-query query$="{{mobileWhen}}" query-matches="{{_isMobile}}" id="xMenuMobileQuery"></iron-media-query>
+    <iron-media-query query$="{{tabletWhen}}" query-matches="{{_isTablet}}" id="xMenuTabletQuery"></iron-media-query>
+    
+    <div class="mobile-x-menu-wrapper">
+        <div class="x-menu-container">
+            <content></content>
+        </div>
+    </div>
   </template>
 </dom-module>
 
 <script>
 Polymer({
-	is: 'x-menu',
+    is: 'x-menu',
+    properties: {
+        mobileWhen: {type: String},
+        tabletWhen: {type: String},
+        
+        _menuItems: {
+            value: function() {
+                return this.queryAllEffectiveChildren('x-menu-item');
+            }
+        }
+    },
+    
+    listeners: {
+        'xMenuMobileQuery.query-matches-changed': '_isMobileChanged',
+        'xMenuTabletQuery.query-matches-changed': '_isTabletChanged'
+    },
+    
+    attached: function() {
+        this._isMobileChanged();
+        this._isTabletChanged();
+    },
+    
+    _isMobileChanged: function() {
+        if (!this._menuItems) return;
+        
+        //console.log("changed");
+        if (this._isMobile)
+            this.setAttribute('is-mobile', "");
+        else
+            this.removeAttribute('is-mobile');
+        
+        for(var i=0; i < this._menuItems.length; i++){
+            if (this._isMobile)
+                this._menuItems[i].setAttribute('is-mobile', "");
+            else
+                this._menuItems[i].removeAttribute('is-mobile');
+        }
+    },
+    
+    _isTabletChanged: function() {
+        if (!this._menuItems) return;
+        
+        //console.log("changed");
+        if (this._isTablet)
+            this.setAttribute('is-tablet', "");
+        else
+            this.removeAttribute('is-tablet');
+        
+        for(var i=0; i < this._menuItems.length; i++){
+            if (this._isTablet)
+                this._menuItems[i].setAttribute('is-tablet', "");
+            else
+                this._menuItems[i].removeAttribute('is-tablet');
+        }
+    }
 });
 </script>
