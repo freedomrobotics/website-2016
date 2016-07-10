@@ -87,7 +87,6 @@ Custom property                                  | Description                  
 <dom-module id="x-menu">
   <template>
     <style>
-      /* local styles go here */
       :host {
         text-align: center;
       }
@@ -117,12 +116,13 @@ Custom property                                  | Description                  
         align-content: flex-start;
       }
       
-      :host[is-mobile] mobile-x-menu-button {
+      :host[is-mobile] x-menu-button {
         display: block;
       }
     </style>
-    <!-- local DOM goes here -->
-    <div class="mobile-x-menu-button">
+
+    
+    <div class="x-menu-button">
         
     </div>
     
@@ -141,17 +141,36 @@ Custom property                                  | Description                  
 Polymer({
     is: 'x-menu',
     properties: {
-        mobileWhen: {type: String},
-        tabletWhen: {type: String},
+        /**
+         * Query string for when the menu switches to mobile style
+         */
+        mobileWhen: String,
+        
+        /**
+         * Query string for when the menu switches to tablet style
+         */
+        tabletWhen: String,
+        
+        /**
+         * Flag for Mobile Device Type
+         */
         isMobile: {
             type: Boolean,
             observer: '_isMobileChanged'
         },
+        
+        /**
+         * Flag for Tablet Device Type
+         */
         isTablet: {
             type: Boolean,
             observer: '_isTabletChanged'
         },
         
+        
+        /**
+         * Private Property Containing all the direct descending menu-item nodes
+         */
         _menuItems: {
             value: function() {
                 return this.queryAllEffectiveChildren('x-menu-item');
@@ -159,16 +178,28 @@ Polymer({
         }
     },
     
+    /**
+     * iron-media-query listeners
+     *
+     * todo: consider looking into imperative listening again.
+     */
     listeners: {
         'xMenuMobileQuery.query-matches-changed': '_isMobileChanged',
         'xMenuTabletQuery.query-matches-changed': '_isTabletChanged'
     },
-    
-    attached: function() {
+        
+    /**
+     * On ready add device type flags accordingly
+     */
+    ready: function() {
         this._isMobileChanged();
         this._isTabletChanged();
     },
     
+    
+    /**
+     * Listener function for media query to change is-mobile flag. Also applies to each menu item
+     */
     _isMobileChanged: function() {
         if (!this._menuItems) return;
         
@@ -186,6 +217,10 @@ Polymer({
         }
     },
     
+    
+    /**
+     * Listener function for media query to change is-tablet flag. Also applies to each mean item.
+     */
     _isTabletChanged: function() {
         if (!this._menuItems) return;
         

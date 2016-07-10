@@ -87,11 +87,12 @@ Custom property                                  | Description                  
 <dom-module id="x-menu-item">
   <template>
     <style>
-      /* Global styles */
+    /* Global styles */
       :host {
         font-weight: 500;
         cursor: pointer;
         letter-spacing: -0.01em;
+        
         /* Prevent Text Selection */
         -webkit-touch-callout: none; /* iOS Safari */
         -webkit-user-select: none;   /* Chrome/Safari/Opera */
@@ -101,26 +102,22 @@ Custom property                                  | Description                  
         user-select: none;
       }
       
-      /* Desktop Styles */
-      /* Tablet Styles */
-      /* Mobile Styles */
-      /* Normal Menu Item Styles */
-      
-      
-      /* Sub Menu Item Styles */
-      
-      /* Active Styles */
-      
-      /* Disabled Styles */
-      
-      :host[is-mobile] {
-        color: purple;
-      }
-      
       :host[sub-item] {
         font-weight: 400;
       }
       
+      :host a {
+        text-decoration: none;
+        color: inherit;
+      }
+      
+      :host[active],
+      :host[disabled] {
+        cursor: default;
+      }
+      
+    /* Desktop Styles */
+      /* Main Item Style */
       .x-menu-item-wrapper {
         transition: .125s background-color;
         width: 10em;
@@ -133,25 +130,56 @@ Custom property                                  | Description                  
         color: rgba(0,0,0,.54);
       }
       
-      :host:hover > div > .x-menu-item-wrapper {
-        /*background-color: var(--google-grey-100);*/
+      /* Main Item Hover Style. Also used if active. Also used for dropdown. */
+      :host:hover > div > .x-menu-item-wrapper,
+      :host:hover > a > .x-menu-item-wrapper,
+      :host[active] .x-menu-item-wrapper,
+      /* Dropdown Menu Open. Border Bottom is disabled in a section below */
+      :host[open] > div >.x-menu-item-wrapper {
         border-bottom: .175em solid var(--google-grey-300);
         color: rgba(0,0,0,.87);
         background-color: var(--google-grey-100);
       }
       
-      :host a {
-        text-decoration: none;
-        color: inherit;
+      /* Expand Icon */
+      :host[has-children] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        display: block;
+        margin: 0 auto;
+        height: 1.111em;
+        width: 1.111em;
+        margin-top: -.889em;
+        transition: .3s transform cubic-bezier(0.215, 0.61, 0.355, 1); /* Cubic Curve */
       }
       
-      :host:hover > a > .x-menu-item-wrapper {
-        /*background-color: var(--google-grey-100);*/
-        border-bottom: .175em solid var(--google-grey-300);
-        color: rgba(0,0,0,.87);
-        background-color: var(--google-grey-100);
+      /* Expand Icon Open */
+      :host[has-children][open] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        transform: rotate(180deg);
+        margin-top: -.889em;
       }
       
+      /* Expand Icon Dropdown in Dropdown */
+      :host[has-children][sub-item] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        margin: 0;
+        height: 1.445em;
+        width: 1.125em;
+        float: right;
+        margin-right: -.55em;
+        transition: .3s transform cubic-bezier(0.215, 0.61, 0.355, 1); /* Cubic Curve */
+      }
+      
+      /* Expand Icon Dropdown in Dropdown Open */
+      :host[has-children][sub-item][open] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        margin-top: auto;
+      }
+      
+      /* Disable Bottom Select Indicator */
+      :host[has-children] > div > .x-menu-item-wrapper,
+      :host[has-children]:hover .x-menu-item-wrapper,
+      :host[sub-item]:hover > a > .x-menu-item-wrapper {
+        border-bottom: none;
+      }
+      
+      /* Dropdown Style */
       .x-sub-menu-container {
         position: absolute;
         display: none;
@@ -160,41 +188,12 @@ Custom property                                  | Description                  
         @apply(--shadow-elevation-3dp);
       }
       
+      /* Dropdown Active */
       :host[open] > .x-menu-item-dropdown > .x-sub-menu-container {
         display: block;
       }
       
-      :host[active] {
-        cursor: default;
-      }
-      
-      :host[disabled] {
-        cursor: default;
-      }
-      
-      :host[disabled] .x-menu-item-wrapper {
-        color: rgba(0,0,0,.38);
-      }
-      
-      :host[active] .x-menu-item-wrapper {
-        color: rgba(0,0,0,.87);
-        border-bottom: .175em solid var(--google-grey-300);
-        background-color: var(--google-grey-100);
-      }
-      
-      :host[open] > div >.x-menu-item-wrapper {
-        color: rgba(0,0,0,.87);
-        background-color: var(--google-grey-100);
-      }
-      
-      :host[has-children] > div > .x-menu-item-wrapper {
-        border-bottom: none;
-      }
-      
-      :host[has-children]:hover .x-menu-item-wrapper {
-        border-bottom: none;
-      }
-      
+      /* Dropdown Item Style */
       :host[sub-item] .x-menu-item-wrapper {
         font-size: 1em;
         text-align: left;
@@ -207,42 +206,37 @@ Custom property                                  | Description                  
         padding-right: 1em;
       }
       
-      :host[sub-item]:hover > a > .x-menu-item-wrapper {
-        border-bottom: none;
-        background-color: var(--google-grey-100);
-      }
-      
-      :host[has-children] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
-        display: block;
-        margin: 0 auto;
-        height: 1.111em;
-        width: 1.111em;
-        margin-top: -.889em;
-        transition: .3s transform cubic-bezier(0.215, 0.61, 0.355, 1);
-      }
-      
-      :host[has-children][open] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
-        transform: rotate(180deg);
-        margin-top: -.889em;
-      }
-      
-      :host[has-children][sub-item] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
-        display: block;
-        margin: 0;
-        height: 1.445em;
-        width: 1.125em;
-        float: right;
-        margin-right: -.55em;
-        transition: .3s transform cubic-bezier(0.215, 0.61, 0.355, 1);
-      }
-      
-      :host[has-children][sub-item][open] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
-        margin-top: auto;
-      }
-      
+      /* Dropdown in Dropdown Menu Container */
       :host[open][sub-item] > .x-menu-item-dropdown > .x-sub-menu-container {
         margin-top: -2.2em;
         margin-left: 11.25em;
+      }
+      
+      
+      
+    /* Tablet Styles */
+      :host[is-tablet] {
+        color: red;
+      }
+      
+    /* Mobile Styles */
+      :host[is-mobile] {
+        color: purple;
+      }
+      
+      /* Normal Menu Item Styles */
+      
+      
+      /* Sub Menu Item Styles */
+      
+      /* Active Styles */
+      
+      
+      
+    /* Disabled Styles */
+      /* This item is disabled */
+      :host[disabled] .x-menu-item-wrapper {
+        color: rgba(0,0,0,.38);
       }
       
     </style>
@@ -279,46 +273,77 @@ Custom property                                  | Description                  
 Polymer({
     is: 'x-menu-item',
     properties: {
-        //link
+        /**
+         * Link for the menu item
+         */
         href: String,
         
-        //flags
+        
+        /**
+         * Current page flag
+         */
         active: {
             type: Boolean,
             observer: '_activeFlagChanged'
         },
+        
+        /**
+         * Menu item disabled flag
+         */
         disabled: {
             type: Boolean,
             value: false,
             observer: '_disabledFlagChanged'
         },
+        
+        /**
+         * Menu item is a decensdant of another menu item flag
+         */
         subItem: {
             type: Boolean,
             observer: '_subItemFlagChanged'
         },
-        open: {
-            type: Boolean,
-        },
         
-        //flags for device type
+        /**
+         * For Dropdown Menus: Menu is open
+         */
+        open: Boolean,
+        
+        
+        /**
+         * Mobile device type flag. From x-menu
+         */
         isMobile: {
             type: Boolean,
             observer: '_isMobileChanged'
         },
+        
+        /**
+         * Tablet device type flag. From x-menu
+         */
         isTablet: {
             type: Boolean,
             observer: '_isTabletChanged'
         },
         
-        //private vars
-        _hasChildren: {
-            type: Boolean,
-        },
+        
+        /**
+         * Private property: are there children
+         */
+        _hasChildren: Boolean,
+        
+        /**
+         * Contains list of all x-menu-item nodes under this. For Dropdowns.
+         */
         _menuItems: {
             value: function() {
                 return this.queryAllEffectiveChildren('x-menu-item');
             }
         },
+        
+        /**
+         * Contains icon for sub menus
+         */
         _expandArrow: {
             value: function() {
                 return document.createElement('iron-icon');
@@ -326,51 +351,73 @@ Polymer({
         }
     },
 
+    
+    /**
+     * Ready event.
+     * todo: document when complete
+     */
     ready: function() {
         var childCount = Polymer.dom(this).children.length;
         this._hasChildren = false;
         if (childCount > 0) {
             this._hasChildren = true;
             //debug
-            console.log("x-menu-item: hasChildren " + this._hasChildren);
-            console.log("x-menu-item: " + childCount + " children found");
+            //console.log("x-menu-item: hasChildren " + this._hasChildren);
+            //console.log("x-menu-item: " + childCount + " children found");
             // create iron-icon
-            if (this.subItem) this._expandArrow.setAttribute('icon', "chevron-right");
-            else this._expandArrow.setAttribute('icon', "expand-more");            
+            if (this.subItem)
+                this._expandArrow.setAttribute('icon', "chevron-right");
+            else
+                this._expandArrow.setAttribute('icon', "expand-more");            
             this._expandArrow.setAttribute('expand-icon', "");
             this._expandArrow.setAttribute('class', 'x-menu-item');
+            
             //insert iron-icon
             var subMenuItem = this.queryEffectiveChildren('x-menu-item');
             Polymer.dom(this).insertBefore(this._expandArrow, subMenuItem);
             this.setAttribute('has-children', "");
         }
         
+        // update mobile and tablet flags (aka propogate to children if there are children and if active)
         this._isMobileChanged();
         this._isTabletChanged();
     },
     
+    /**
+     * Attach event.
+     * todo: document when complete
+     */
     attached: function() {
         if (!this._hasChildren) return;
-        //move submenu container to end
-        //Polymer.dom(this).appendChild(subMenuContainer);
-        //console.log(subMenuContainer);
-        //force sub-item flag on each sub item and move to container
+        
+        //force sub-item flag on each sub item and move to sub menu container
         var subMenuContainer = this.$$('.x-sub-menu-container');
         for(var i=0; i < this._menuItems.length; i++){
             this._menuItems[i].setAttribute('sub-item', "");
             Polymer.dom(subMenuContainer).appendChild(this._menuItems[i]);
         }
+        
+        //Listen for tap events (for dropdowns)
         this.listen(document, 'tap', '_tapped');
     },
     
+    /**
+     * Detach event.
+     * todo: document when complete
+     */
     detached: function() {
         if (!this._hasChildren) return;
         this.unlisten(document, 'tap', '_tapped');
     },
     
+    
+    /**
+     * Listener function for is-mobile flag. If there's children, set flag
+     */
     _isMobileChanged: function() {
         if (!this._hasChildren) return;
         
+        //set is-mobile flag on each sub-menu item
         for(var i=0; i < this._menuItems.length; i++){
             if (this.isMobile)
                 this._menuItems[i].setAttribute('is-mobile', "");
@@ -379,9 +426,13 @@ Polymer({
         }
     },
     
+    /**
+     * Listener function for is-tablet flag. If there's children, set flag
+     */
     _isTabletChanged: function() {
         if (!this._hasChildren) return;
         
+        //set is-tablet flag on each sub-menu item
         for(var i=0; i < this._menuItems.length; i++){
             if (this.isTablet)
                 this._menuItems[i].setAttribute('is-tablet', "");
@@ -390,11 +441,25 @@ Polymer({
         }
     },
     
+    
+    /**
+     * sub-item flag listener.
+     * todo: document when complete
+     */
+    _subItemFlagChanged: function() {
+        if (this.subItem) this._expandArrow.setAttribute('icon', "chevron-right");
+        else this._expandArrow.setAttribute('icon', "expand-more");
+    },
+    
+    
+    /**
+     * Tapped listener. Checks to see where the tap is to set menu open or nah.
+     */
     _tapped: function(e) {
         if (!this._hasChildren && !this.open) return;
         
         var target = e.target;
-        while(target != this && target != window.document) {
+        while(target != this && target != window.document && target != null) {
             //if the target reaches the sub menu node, ignore it.
             if (target == this.$$('.x-sub-menu-container')) return;
             //"bubble" the tapped target up until it either matches the current node or the document node.
@@ -407,18 +472,13 @@ Polymer({
                 this.setAttribute('open', "");
             else
                 this.removeAttribute('open');
-            console.log("toggled");
+            //console.log("toggled");
         } else {
             // not
             this.removeAttribute('open');
             //console.log("closed");
         }
         
-    },
-    
-    _subItemFlagChanged: function() {
-        if (this.subItem) this._expandArrow.setAttribute('icon', "chevron-right");
-        else this._expandArrow.setAttribute('icon', "expand-more");
     }
 });
 </script>
