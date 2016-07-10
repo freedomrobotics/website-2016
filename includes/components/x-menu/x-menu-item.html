@@ -6,8 +6,8 @@ style properties are --x-menu-style: desktop-full, desktop-lite, mobile, each fo
 
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../iron-icons/iron-icons.html">
-<link rel="import" href="../../iron-meta/iron-meta.html">
 <link rel="import" href="../../paper-styles/color.html">
+<link rel="import" href="../../paper-styles/shadow.html">
 
 <!--
 *copied for reference to rewrite later*
@@ -87,50 +87,189 @@ Custom property                                  | Description                  
 <dom-module id="x-menu-item">
   <template>
     <style>
-      /* local styles go here */
+      /* Global styles */
       :host {
         font-weight: 500;
+        cursor: pointer;
+        letter-spacing: -0.01em;
+        /* Prevent Text Selection */
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none;   /* Chrome/Safari/Opera */
+        -khtml-user-select: none;    /* Konqueror */
+        -moz-user-select: none;      /* Firefox */
+        -ms-user-select: none;       /* Internet Explorer/Edge */
+        user-select: none;
       }
+      
+      /* Desktop Styles */
+      /* Tablet Styles */
+      /* Mobile Styles */
+      /* Normal Menu Item Styles */
+      
+      
+      /* Sub Menu Item Styles */
+      
+      /* Active Styles */
+      
+      /* Disabled Styles */
       
       :host[is-mobile] {
         color: purple;
       }
       
+      :host[sub-item] {
+        font-weight: 400;
+      }
+      
       .x-menu-item-wrapper {
-        padding: 0 5px;
+        transition: .125s background-color;
         width: 10em;
         height: 2.5em;
         text-align: center;
         line-height: 2.5em;
         font-size: 1.125em;
+        border-bottom: .175em solid transparent;
+        box-sizing: border-box;
+        color: rgba(0,0,0,.54);
       }
       
-      :host[sub-item] .x-menu-item-wrapper {
-        font-size: .889em;
+      :host:hover > div > .x-menu-item-wrapper {
+        /*background-color: var(--google-grey-100);*/
+        border-bottom: .175em solid var(--google-grey-300);
+        color: rgba(0,0,0,.87);
+        background-color: var(--google-grey-100);
       }
       
-      .x-menu-item-wrapper:hover {
-        background-color: var(--google-grey-300);
+      :host a {
+        text-decoration: none;
+        color: inherit;
+      }
+      
+      :host:hover > a > .x-menu-item-wrapper {
+        /*background-color: var(--google-grey-100);*/
+        border-bottom: .175em solid var(--google-grey-300);
+        color: rgba(0,0,0,.87);
+        background-color: var(--google-grey-100);
+      }
+      
+      .x-sub-menu-container {
+        position: absolute;
+        display: none;
+        width: inherit;
+        background-color: white;
+        @apply(--shadow-elevation-3dp);
+      }
+      
+      :host[open] > .x-menu-item-dropdown > .x-sub-menu-container {
+        display: block;
       }
       
       :host[active] {
-        background-color: var(--google-grey-300);
+        cursor: default;
       }
+      
+      :host[disabled] {
+        cursor: default;
+      }
+      
+      :host[disabled] .x-menu-item-wrapper {
+        color: rgba(0,0,0,.38);
+      }
+      
+      :host[active] .x-menu-item-wrapper {
+        color: rgba(0,0,0,.87);
+        border-bottom: .175em solid var(--google-grey-300);
+        background-color: var(--google-grey-100);
+      }
+      
+      :host[open] > div >.x-menu-item-wrapper {
+        color: rgba(0,0,0,.87);
+        background-color: var(--google-grey-100);
+      }
+      
+      :host[has-children] > div > .x-menu-item-wrapper {
+        border-bottom: none;
+      }
+      
+      :host[has-children]:hover .x-menu-item-wrapper {
+        border-bottom: none;
+      }
+      
+      :host[sub-item] .x-menu-item-wrapper {
+        font-size: 1em;
+        text-align: left;
+        height: auto;
+        width: 11.25em;
+        line-height: 1.5em;
+        border-bottom: none;
+        padding: .5em;
+        padding-left: .8em;
+        padding-right: 1em;
+      }
+      
+      :host[sub-item]:hover > a > .x-menu-item-wrapper {
+        border-bottom: none;
+        background-color: var(--google-grey-100);
+      }
+      
+      :host[has-children] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        display: block;
+        margin: 0 auto;
+        height: 1.111em;
+        width: 1.111em;
+        margin-top: -.889em;
+        transition: .3s transform cubic-bezier(0.215, 0.61, 0.355, 1);
+      }
+      
+      :host[has-children][open] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        transform: rotate(180deg);
+        margin-top: -.889em;
+      }
+      
+      :host[has-children][sub-item] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        display: block;
+        margin: 0;
+        height: 1.445em;
+        width: 1.125em;
+        float: right;
+        margin-right: -.55em;
+        transition: .3s transform cubic-bezier(0.215, 0.61, 0.355, 1);
+      }
+      
+      :host[has-children][sub-item][open] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        margin-top: auto;
+      }
+      
+      :host[open][sub-item] > .x-menu-item-dropdown > .x-sub-menu-container {
+        margin-top: -2.2em;
+        margin-left: 11.25em;
+      }
+      
     </style>
     
     
     <template is="dom-if" if="{{_hasChildren}}">
-        <div class="x-menu-item-wrapper">
-            <content></content>
+        <div class="x-menu-item-dropdown">
+            <div class="x-menu-item-wrapper">
+                <content></content>
+            </div>
+            <div class="x-sub-menu-container"></div>
         </div>
     </template>
     
     <template is="dom-if" if="{{!_hasChildren}}">
-        <a href="{{href}}">
+        <template is="dom-if" if="{{disabled}}">
             <div class="x-menu-item-wrapper">
                 <content></content>
             </div>
-        </a>
+        </template>
+        <template is="dom-if" if="{{!disabled}}">
+            <a href="{{href}}">
+                <div class="x-menu-item-wrapper">
+                    <content></content>
+                </div>
+            </a>
+        </template>
     </template>
     
   </template>
@@ -150,11 +289,15 @@ Polymer({
         },
         disabled: {
             type: Boolean,
+            value: false,
             observer: '_disabledFlagChanged'
         },
         subItem: {
             type: Boolean,
             observer: '_subItemFlagChanged'
+        },
+        open: {
+            type: Boolean,
         },
         
         //flags for device type
@@ -175,10 +318,15 @@ Polymer({
             value: function() {
                 return this.queryAllEffectiveChildren('x-menu-item');
             }
+        },
+        _expandArrow: {
+            value: function() {
+                return document.createElement('iron-icon');
+            }
         }
     },
-    
-    attached: function() {
+
+    ready: function() {
         var childCount = Polymer.dom(this).children.length;
         this._hasChildren = false;
         if (childCount > 0) {
@@ -186,18 +334,38 @@ Polymer({
             //debug
             console.log("x-menu-item: hasChildren " + this._hasChildren);
             console.log("x-menu-item: " + childCount + " children found");
-            // Insert iron-icon
-            var expandArrow = document.createElement('iron-icon');
+            // create iron-icon
+            if (this.subItem) this._expandArrow.setAttribute('icon', "chevron-right");
+            else this._expandArrow.setAttribute('icon', "expand-more");            
+            this._expandArrow.setAttribute('expand-icon', "");
+            this._expandArrow.setAttribute('class', 'x-menu-item');
+            //insert iron-icon
             var subMenuItem = this.queryEffectiveChildren('x-menu-item');
-            Polymer.dom(this).insertBefore(expandArrow, subMenuItem);
-            //force sub-item flag on each sub item
-            for(var i=0; i < this._menuItems.length; i++){
-                this._menuItems[i].setAttribute('sub-item', "");
-            }
+            Polymer.dom(this).insertBefore(this._expandArrow, subMenuItem);
+            this.setAttribute('has-children', "");
         }
         
         this._isMobileChanged();
         this._isTabletChanged();
+    },
+    
+    attached: function() {
+        if (!this._hasChildren) return;
+        //move submenu container to end
+        //Polymer.dom(this).appendChild(subMenuContainer);
+        //console.log(subMenuContainer);
+        //force sub-item flag on each sub item and move to container
+        var subMenuContainer = this.$$('.x-sub-menu-container');
+        for(var i=0; i < this._menuItems.length; i++){
+            this._menuItems[i].setAttribute('sub-item', "");
+            Polymer.dom(subMenuContainer).appendChild(this._menuItems[i]);
+        }
+        this.listen(document, 'tap', '_tapped');
+    },
+    
+    detached: function() {
+        if (!this._hasChildren) return;
+        this.unlisten(document, 'tap', '_tapped');
     },
     
     _isMobileChanged: function() {
@@ -220,6 +388,37 @@ Polymer({
             else
                 this._menuItems[i].removeAttribute('is-tablet');
         }
+    },
+    
+    _tapped: function(e) {
+        if (!this._hasChildren && !this.open) return;
+        
+        var target = e.target;
+        while(target != this && target != window.document) {
+            //if the target reaches the sub menu node, ignore it.
+            if (target == this.$$('.x-sub-menu-container')) return;
+            //"bubble" the tapped target up until it either matches the current node or the document node.
+            target = target.parentNode;
+        }
+        if(target == this) {
+            // In current node
+            //toggle open attribute
+            if (!this.open)
+                this.setAttribute('open', "");
+            else
+                this.removeAttribute('open');
+            console.log("toggled");
+        } else {
+            // not
+            this.removeAttribute('open');
+            //console.log("closed");
+        }
+        
+    },
+    
+    _subItemFlagChanged: function() {
+        if (this.subItem) this._expandArrow.setAttribute('icon', "chevron-right");
+        else this._expandArrow.setAttribute('icon', "expand-more");
     }
 });
 </script>
