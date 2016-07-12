@@ -164,7 +164,6 @@ Custom property                                  | Description                  
         width: 1.125em;
         float: right;
         margin-right: -.55em;
-        transition: .3s transform cubic-bezier(0.215, 0.61, 0.355, 1); /* Cubic Curve */
       }
       
       /* Expand Icon Dropdown in Dropdown Open */
@@ -213,11 +212,113 @@ Custom property                                  | Description                  
       }
       
       
-      
-    /* Tablet Styles */
-      :host[is-tablet] {
-        color: red;
+    /* Tablet and Mobile Styles */
+      :host[is-tablet],
+      :host[is-mobile] {
+        width: 16.875em;
+        font-weight: 400;
       }
+      
+      /* Main Item Style */
+      :host[is-tablet] .x-menu-item-wrapper,
+      :host[is-mobile] .x-menu-item-wrapper {
+        transition: .125s background-color;
+        width: 16.875em;
+        height: auto;
+        text-align: left;
+        line-height: 1.15em;
+        font-size: 1em;
+        border-bottom: none;
+        box-sizing: border-box;
+        color: rgba(0,0,0,.87);
+        padding: 1.125em 1em;
+      }
+      
+      /* Main Item Hover Style. Also used if active. */
+      :host[is-tablet]:hover > a > .x-menu-item-wrapper,
+      :host[active][is-tablet] .x-menu-item-wrapper {
+        border-bottom: inherit;
+        background-color: var(--google-grey-100);
+      }
+      
+      /* Disable dropdown hover style */
+      :host[is-tablet]:hover > div > .x-menu-item-wrapper {
+        border-bottom: none;
+        color: initial;
+        background-color: transparent;
+      }
+      
+      /* Expand Icon */
+      :host[has-children][is-tablet] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon],
+      :host[has-children][is-mobile] > .x-menu-item-dropdown > .x-menu-item-wrapper > iron-icon[expand-icon] {
+        display: none;
+      }
+      
+      /* Section Text */
+      :host[has-children][is-tablet] > .x-menu-item-dropdown > .x-menu-item-wrapper,
+      :host[has-children][is-mobile] > .x-menu-item-dropdown > .x-menu-item-wrapper {
+        color: rgba(0,0,0,.54);
+        padding-bottom: .5em;
+        background-color: transparent;
+      }
+      
+      /* Subsection Style */
+      :host[has-children][is-tablet] .x-sub-menu-container,
+      :host[has-children][is-mobile] .x-sub-menu-container{
+        position: inherit;
+        display: block;
+        padding-left: 5%;
+        width: inherit;
+        box-sizing: border-box;
+        background-color: transparent;
+        @apply(--shadow-none);
+      }
+      
+      /* Top Subsection Divider */
+      :host[has-children][is-tablet] > .x-menu-item-dropdown,
+      :host[has-children][is-mobile] > .x-menu-item-dropdown {
+        border-top: 1px solid rgba(0,0,0,.12);
+        border-bottom: 1px solid rgba(0,0,0,.12);
+        padding-bottom: .325em;
+      }
+      
+      /* Subsection Item Style */
+      :host[sub-item][is-mobile] .x-menu-item-wrapper,
+      :host[sub-item][is-tablet] .x-menu-item-wrapper {
+        font-size: 1em;
+        text-align: left;
+        height: auto;
+        width: 100%;
+        line-height: 1em;
+        border-bottom: none;
+        padding: .8125em 1em;
+      }
+      
+      /* Subsection in Subsection Container (cancel previous style) */
+      :host[open][sub-item][is-mobile] > .x-menu-item-dropdown > .x-sub-menu-container,
+      :host[open][sub-item][is-tablet] > .x-menu-item-dropdown > .x-sub-menu-container {
+        margin: 0;
+      }
+      
+      /* Subsection in subsection Divider and spacing */
+      :host[sub-item][has-children][is-tablet] > .x-menu-item-dropdown,
+      :host[sub-item][has-children][is-mobile] > .x-menu-item-dropdown {
+        margin-top: .4375em;
+        border-bottom: none;
+        padding-bottom: inherit;
+      }
+      
+      /* Titles for each subseciton */
+      :host[has-children][sub-item][is-mobile],
+      :host[has-children][sub-item][is-tablet],
+      :host[has-children][is-tablet],
+      :host[has-children][is-mobile] {
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      
+      
+    /*Tablet Styles */
       
     /* Mobile Styles */
       :host[is-mobile] {
@@ -456,7 +557,7 @@ Polymer({
      * Tapped listener. Checks to see where the tap is to set menu open or nah.
      */
     _tapped: function(e) {
-        if (!this._hasChildren && !this.open) return;
+        if (!this._hasChildren) return;
         
         var target = e.target;
         while(target != this && target != window.document && target != null) {

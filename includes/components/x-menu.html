@@ -7,6 +7,7 @@ e.g. mobile-when="(min-width: 400px;)"
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-media-query/iron-media-query.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="x-menu/x-menu-item.html">
 
 <!--
@@ -105,36 +106,117 @@ Custom property                                  | Description                  
         justify-content: flex-end;
         align-items: flex-end;
         flex-basis: auto;
+        overflow: hidden;
       }
       
-      :host[is-mobile] .x-menu-container {
-        display: flex;
+      
+      :host[is-mobile] > .mobile-x-menu-wrapper > .overlay,
+      :host[is-tablet] > .mobile-x-menu-wrapper > .overlay {
+        flex-grow: 1;
+        opacity: 0;
+        background-color: black;
+        transition: .5s opacity;
+      }
+      
+      :host[is-mobile][open] > .mobile-x-menu-wrapper > .overlay,
+      :host[is-tablet][open] > .mobile-x-menu-wrapper > .overlay {
+        opacity: .4;
+      }
+      
+      :host[is-mobile] .x-menu-container,
+      :host[is-tablet] .x-menu-container {
+        display: flex;        
         flex-flow: column nowrap;
-        justify-content: flex-end;
+        justify-content: flex-start;
         align-items: flex-start;
         flex-basis: auto;
-        align-content: flex-start;
+        background-color: white;
+        @apply(--shadow-elevation-24dp);
+        overflow-y: scroll;
+        width: 20em;
+        margin-right: -3.125em;
       }
       
-      :host[is-mobile] x-menu-button {
+      
+      :host[is-mobile] .mobile-x-menu-wrapper,
+      :host[is-tablet] .mobile-x-menu-wrapper {
+        display: none;
+        position: fixed;
+        transition: 1s background-color;
+        background-color: rgba(0,0,0,0);
+        
+      }
+      
+      :host[is-mobile][open] .mobile-x-menu-wrapper,
+      :host[is-tablet][open] .mobile-x-menu-wrapper {
+        display: flex;
+        right: 0;
+        top: 0;
+        background-color: rgba(0,0,0,0.4);
+        height:100%;
+        width:100%;
+        
+      }
+      
+      :host .x-menu-button {
+        display: none;
+      }
+      
+      :host[is-mobile] .x-menu-button,
+      :host[is-tablet] .x-menu-button {
         display: block;
+        height: 2.8125em;
+        width: 2.8125em;
+        cursor: pointer;
+        box-sizing: border-box;
+        border: 1px solid rgba(0,0,0, .12);
+        border-radius: .125em;
+        background-color: white;
+        transition: .125s background-color;
+      }
+      
+      :host[is-mobile][open] .x-menu-button,
+      :host[is-tablet][open] .x-menu-button,
+      :host[is-mobile] .x-menu-button:hover,
+      :host[is-tablet] .x-menu-button:hover {
+        background-color: var(--google-grey-100);
+      }
+      
+      :host .x-menu-button iron-icon {
+        width: auto;
+        height: auto;
+        padding: .375em;
+      }
+      
+      :host[is-mobile] .scrollbar,
+      :host[is-tablet] .scrollbar {
+        position: fixed;
+        width: 3px;
+        background-color: rgba(0,0,0,.4);
+        height: 100%;
+        top: 0;
+        right: 0;
       }
     </style>
 
     
     <div class="x-menu-button">
-        
+        <iron-icon icon="menu"></iron-icon>
     </div>
     
     <iron-media-query query$="{{mobileWhen}}" query-matches="{{_isMobile}}" id="xMenuMobileQuery"></iron-media-query>
     <iron-media-query query$="{{tabletWhen}}" query-matches="{{_isTablet}}" id="xMenuTabletQuery"></iron-media-query>
     
+       
     <div class="mobile-x-menu-wrapper">
+        <div class="overlay"></div>
         <div class="x-menu-container">
             <content></content>
+            <div class="scrollbar"></div>
         </div>
     </div>
-  </template>
+  </template>var helloDiv = Polymer.dom(this.root).querySelector('.hello');
+            $(helloDiv).toggleClass('red');
 </dom-module>
 
 <script>
@@ -150,6 +232,11 @@ Polymer({
          * Query string for when the menu switches to tablet style
          */
         tabletWhen: String,
+        
+        /**
+         * For tablet and mobile: Menu is open
+         */
+        open: Boolean,
         
         /**
          * Flag for Mobile Device Type
@@ -196,6 +283,22 @@ Polymer({
         this._isTabletChanged();
     },
     
+    attached: function() {
+        //Listen for tap events (for dropdowns)
+        this.listen(document, 'tap', '_tapped');
+        //Listen for scroll event for tablet and mobile style. Also update on window resize
+        this.listen(this.$$('.x-menu-container'), 'scroll', '_scrollEvent');
+        this.listen(window, 'resize', '_scrollEvent');
+    },
+    
+    detached: function() {
+        //Unisten for tap events (for dropdowns)
+        this.unlisten(document, 'tap', '_tapped');
+        //Unlisten for scroll event for tablet and mobile style. Unlisten resize
+        this.unlisten(this.$$('.x-menu-container'), 'scroll', '_scrollEvent');
+        this.unlisten(window, 'resize', '_scrollEvent');
+    },
+    
     
     /**
      * Listener function for media query to change is-mobile flag. Also applies to each menu item
@@ -235,6 +338,68 @@ Polymer({
                 this._menuItems[i].setAttribute('is-tablet', "");
             else
                 this._menuItems[i].removeAttribute('is-tablet');
+        }
+    },
+    
+    
+    /**
+     * Tapped listener. Checks to see where the tap is to set menu open or nah.
+     */
+    _tapped: function(e) {
+        var target = e.target;
+        while(target != this && target != window.document && target != null) {
+            //if the target reaches the menu wrapper node, break and close menu
+            if (target == this.$$('.mobile-x-menu-wrapper')) break;
+            //if the target reaches the menu container node, ignroe the tap
+            if (target == this.$$('.x-menu-container')) return;
+            //"bubble" the tapped target up until it either matches the current node or the document node.
+            target = target.parentNode;
+        }
+        if(target == this) {
+            // In current node
+            //toggle open attribute and update scrollbar
+            if (!this.open){
+                this.setAttribute('open', "");
+                this._scrollEvent();
+            }else
+                this.removeAttribute('open');
+            //console.log("toggled");
+        } else {
+            // not
+            this.removeAttribute('open');
+            //console.log("closed");
+        }
+        
+    },
+    
+    /**
+      * var open - whether menu should be open or not.
+      */
+    _menuToggle: function(open) {
+        
+    },
+    
+    /**
+      * Scroll listener for the mobile and tablet menues. Syncs scroll div with current position
+      */
+    _scrollEvent: function(e) {
+        /*visible height/content height = scrollbar height
+        if less, set display to none, if mroe set display to block
+        */
+        if (!this.open) return;
+        
+        var container = this.$$('.x-menu-container');
+        var visible = container.clientHeight;
+        var total = container.scrollHeight;
+        var top = container.scrollTop/total*visible;
+        var scrollBarHeight = visible/total*100;
+        
+        if (scrollBarHeight < 100) {
+            this.$$('.scrollbar').style.cssText += "display: block";
+            this.$$('.scrollbar').style.cssText += "height: " + scrollBarHeight + "%";
+            this.$$('.scrollbar').style.cssText += "top: " + top + "px";
+        } else {
+            this.$$('.scrollbar').style.cssText += "display: none";
         }
     }
 });
