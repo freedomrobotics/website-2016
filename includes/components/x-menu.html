@@ -9,6 +9,9 @@ e.g. mobile-when="(min-width: 400px;)"
 <link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="x-menu/x-menu-item.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenLite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/easing/EasePack.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/plugins/CSSPlugin.min.js"></script>
 
 <!--
 *copied for reference to rewrite later*
@@ -115,12 +118,11 @@ Custom property                                  | Description                  
         flex-grow: 1;
         opacity: 0;
         background-color: black;
-        transition: .5s opacity;
       }
       
       :host[is-mobile][open] > .mobile-x-menu-wrapper > .overlay,
       :host[is-tablet][open] > .mobile-x-menu-wrapper > .overlay {
-        opacity: .4;
+        opacity: .6;
       }
       
       :host[is-mobile] .x-menu-container,
@@ -134,6 +136,11 @@ Custom property                                  | Description                  
         @apply(--shadow-elevation-24dp);
         overflow-y: scroll;
         width: 20em;
+        margin-right: -22em;
+      }
+      
+      :host[is-mobile][open] .x-menu-container,
+      :host[is-tablet][open] .x-menu-container {
         margin-right: -3.125em;
       }
       
@@ -141,18 +148,14 @@ Custom property                                  | Description                  
       :host[is-mobile] .mobile-x-menu-wrapper,
       :host[is-tablet] .mobile-x-menu-wrapper {
         display: none;
-        position: fixed;
-        transition: 1s background-color;
-        background-color: rgba(0,0,0,0);
-        
       }
       
       :host[is-mobile][open] .mobile-x-menu-wrapper,
       :host[is-tablet][open] .mobile-x-menu-wrapper {
         display: flex;
+        position: fixed;
         right: 0;
         top: 0;
-        background-color: rgba(0,0,0,0.4);
         height:100%;
         width:100%;
         
@@ -196,6 +199,12 @@ Custom property                                  | Description                  
         height: 100%;
         top: 0;
         right: 0;
+        margin-right: -18.875em;
+      }
+      
+      :host[is-mobile][open] .scrollbar,
+      :host[is-tablet][open] .scrollbar {
+        margin-right: 0em;
       }
     </style>
 
@@ -262,6 +271,35 @@ Polymer({
             value: function() {
                 return this.queryAllEffectiveChildren('x-menu-item');
             }
+        },
+        
+        _wrapper: {
+            value: function() {
+                return this.$$('.mobile-x-menu-wrapper');
+            }
+        },
+        
+        _container: {
+            value: function() {
+                return this.$$('.x-menu-container');
+            }
+        },
+        
+        _scrollBar: {
+            value: function() {
+                return this.$$('.scrollbar');
+            }
+        },
+        
+        _overlay: {
+            value: function() {
+                return this.$$('.overlay');
+            }
+        },
+        
+        
+        _menuAnim: {
+            type: Object
         }
     },
     
@@ -287,16 +325,29 @@ Polymer({
         //Listen for tap events (for dropdowns)
         this.listen(document, 'tap', '_tapped');
         //Listen for scroll event for tablet and mobile style. Also update on window resize
-        this.listen(this.$$('.x-menu-container'), 'scroll', '_scrollEvent');
+        this.listen(this._container, 'scroll', '_scrollEvent');
         this.listen(window, 'resize', '_scrollEvent');
+        
+        this._menuAnim = [];
+        this._menuAnim._container = TweenLite.fromTo(this._container, .225, {css:{marginRight:"-22em"}}, {css:{marginRight:"-3.125em", clearProps:"marginRight"}, ease:Power1.easeInOut, paused: true});
+        this._menuAnim._scrollBar = TweenLite.fromTo(this._scrollBar, .225, {css:{marginRight:"-18.875em"}}, {css:{marginRight:"0em", clearProps:"marginRight"}, ease:Power1.easeInOut, paused: true});
+        this._menuAnim._overlay = TweenLite.fromTo(this._overlay, .225, {css:{opacity:"0"}}, {css:{opacity:".6", clearProps:"opacity"}, ease:Power1.easeIn, paused: true, callbackScope: this});
+        
+        this._container.style.marginRight = null;
+        this._scrollBar.style.marginRight = null;
+        this._overlay.style.opacity = null;
     },
     
     detached: function() {
         //Unisten for tap events (for dropdowns)
         this.unlisten(document, 'tap', '_tapped');
         //Unlisten for scroll event for tablet and mobile style. Unlisten resize
-        this.unlisten(this.$$('.x-menu-container'), 'scroll', '_scrollEvent');
+        this.unlisten(this._container, 'scroll', '_scrollEvent');
         this.unlisten(window, 'resize', '_scrollEvent');
+        
+        this._menuAnim._container.kill();
+        this._menuAnim._scrollBar.kill();
+        this._menuAnim._overlay.kill();
     },
     
     
@@ -344,39 +395,62 @@ Polymer({
     
     /**
      * Tapped listener. Checks to see where the tap is to set menu open or nah.
+     * Probably could be rewritten in a better manner
      */
     _tapped: function(e) {
         var target = e.target;
         while(target != this && target != window.document && target != null) {
             //if the target reaches the menu wrapper node, break and close menu
-            if (target == this.$$('.mobile-x-menu-wrapper')) break;
+            if (target == this._wrapper) break;
             //if the target reaches the menu container node, ignroe the tap
-            if (target == this.$$('.x-menu-container')) return;
+            if (target == this._container) return;
             //"bubble" the tapped target up until it either matches the current node or the document node.
             target = target.parentNode;
         }
         if(target == this) {
-            // In current node
+            // open pressed
             //toggle open attribute and update scrollbar
             if (!this.open){
-                this.setAttribute('open', "");
-                this._scrollEvent();
-            }else
-                this.removeAttribute('open');
+                this._menuToggle(true);
+            }else {
+                this._menuToggle(false);
+            }
             //console.log("toggled");
-        } else {
+        } else if (this.open && this._isTablet) {
             // not
-            this.removeAttribute('open');
+            this._menuToggle(false);
             //console.log("closed");
+        } else {
+            this.removeAttribute('open');
         }
-        
     },
     
     /**
-      * var open - whether menu should be open or not.
+      * Toggle Menu should be open or not.
       */
     _menuToggle: function(open) {
-        
+        if (open) {
+            if (this.open) return;
+            this._menuAnim._container.timeScale(1).restart();
+            this._menuAnim._scrollBar.timeScale(1).restart();
+            this._menuAnim._overlay.timeScale(1).restart().eventCallback("onStart",
+            function(){
+                this.setAttribute('open', "");
+                this._scrollEvent();
+            });
+        }
+        else {
+            if (!this.open) return;
+            this._menuAnim._container.timeScale(.75).reverse();
+            this._menuAnim._scrollBar.timeScale(.75).reverse();
+            this._menuAnim._overlay.timeScale(.7).reverse().eventCallback("onReverseComplete",
+            function(){
+                this._container.style.marginRight = null;
+                this._scrollBar.style.marginRight = null;
+                this._overlay.style.opacity = null;
+                this.removeAttribute('open');
+            });
+        }
     },
     
     /**
@@ -388,18 +462,17 @@ Polymer({
         */
         if (!this.open) return;
         
-        var container = this.$$('.x-menu-container');
-        var visible = container.clientHeight;
-        var total = container.scrollHeight;
-        var top = container.scrollTop/total*visible;
+        var visible = this._container.clientHeight;
+        var total = this._container.scrollHeight;
+        var top = this._container.scrollTop/total*visible;
         var scrollBarHeight = visible/total*100;
         
         if (scrollBarHeight < 100) {
-            this.$$('.scrollbar').style.cssText += "display: block";
-            this.$$('.scrollbar').style.cssText += "height: " + scrollBarHeight + "%";
-            this.$$('.scrollbar').style.cssText += "top: " + top + "px";
+            this._scrollBar.style.display = "block";
+            this._scrollBar.style.height = scrollBarHeight + "%";
+            this._scrollBar.style.top = top + "px";
         } else {
-            this.$$('.scrollbar').style.cssText += "display: none";
+            this._scrollBar.style.display = "none";
         }
     }
 });

@@ -340,6 +340,19 @@ Custom property                                  | Description                  
         color: rgba(0,0,0,.38);
       }
       
+      /* Hide items based on their -only tags */
+      :host[mobile-only],
+      :host[tablet-only],
+      :host[desktop-only] {
+        display: none;
+      }
+      
+      :host[is-mobile][mobile-only],
+      :host[is-tablet]:not([is-mobile])[tablet-only],
+      :host:not([is-tablet]):not([is-mobile])[desktop-only] {
+        display: inherit;
+      }
+      
     </style>
     
     
@@ -378,6 +391,21 @@ Polymer({
          * Link for the menu item
          */
         href: String,
+        
+        /**
+          * Display in mobile only. Note: can be combined with other -only tags.
+          */
+        mobileOnly: Boolean,
+        
+        /**
+          * Display in tablet only. Note: can be combined with other -only tags.
+          */
+        tabletOnly: Boolean,
+        
+        /**
+          * Display in desktop only. Note: can be combined with other -only tags.
+          */
+        desktopOnly: Boolean,
         
         
         /**
