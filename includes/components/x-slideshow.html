@@ -274,6 +274,9 @@ Polymer({
                 object.src = elem.getAttribute('src');
                 elem.removeAttribute('src');
             }
+            if (elem.hasAttribute('asrc')){
+                object.src = elem.getAttribute('asrc');
+            }
             //push to array
             this.push('_items', object);
             //move node to into wrapper then container. Add attributes as needed
@@ -285,6 +288,7 @@ Polymer({
                 itemWrapper.style.order = -2;
                 this._currentText = object.text;
                 this.currentSlide = this.startSlide;
+				elem.setAttribute('active', '');
             }
         }, this);
     },
@@ -377,7 +381,9 @@ Polymer({
             next.style.zIndex = -2;
             var imgAnim = TweenLite.fromTo(previous, dur, {css:{opacity:"1"}}, {css:{opacity:"0"}, onComplete:function(previous, next) {
                 previous.removeAttribute('style');
+				previous.firstChild.removeAttribute('active');
                 next.style.zIndex = null;
+				next.firstChild.setAttribute('active', '');
             }, onCompleteParams:[previous, next], overwrite: true});
             
             this.push('_transition', textAnim);
