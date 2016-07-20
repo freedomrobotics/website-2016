@@ -1,0 +1,412 @@
+<!--
+slideshow component
+
+autoplay="interval_in_seconds" (if not defined, autoplay disabled)
+
+width: 1280px
+height: 720px
+font-size: inherit
+--x-slideshow-chevron-width: 2em
+--x-slideshow-chevron-height: 2em
+--x-slideshow-title-size: 1.5em
+--x-slideshow-caption-size: 1em
+--x-slideshow-background: #1a1a1a
+--x-slideshow-overlay-background: rgba(0,0,0,.4)
+--x-slideshow-navigation-background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.26) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%);
+--x-slideshow-font-color: white
+--x-slideshow-chevron-color: white
+--x-slideshow-chevron-stroke: none /* "outline" color */
+--x-slideshow-indicator /* x-dot-indicator mixin styling */
+
+on children: x-slideshow-type = fit stretch fill normal(default)
+x-slideshow-title
+x-slideshow-caption
+x-slideshow-transition="duration_in_ms type" (transition in transition and duration)
+types of transitions: fade
+
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../gsap/gsap-lite.html">
+<link rel="import" href="x-dot-indicator.html">
+
+<dom-module id="x-slideshow">
+    <template>
+        <style>
+        :host {
+            display: block;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        :host > .bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--x-slideshow-background, #1a1a1a);
+            z-index:-10;
+        }
+        
+        :host > .container {
+			width: 100%;
+			height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+        
+        :host > .container > .item-wrapper {
+			width: 100%;
+			height: 100%;
+			flex-shrink: 0;
+			flex-basis: auto;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background: var(--x-slideshow-background, #1a1a1a);
+            z-index: -1;
+            overflow:hidden;
+        }
+        
+        :host > .container > .item-wrapper > * {
+            width: auto;
+            height: auto;
+        }
+        
+        :host > .container > .item-wrapper[fit]:not([wide]) > *,
+        :host > .container > .item-wrapper[fill][wide] > *,
+        :host > .container > .item-wrapper[stretch] > * {
+            height: 100%;
+        }
+        
+        :host > .container > .item-wrapper[fit][wide] > *,
+        :host > .container > .item-wrapper[fill]:not([wide]) > *,
+        :host > .container > .item-wrapper[stretch] > * {
+            width: 100%;
+        }
+        
+        :host > .overlay {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            pointer-events: none;
+            display: flex;
+            flex-flow: column nowrap;
+        }
+        
+        :host > .overlay > .top {
+            flex-grow: 1;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+        
+        :host > .overlay > .top > .navigation {
+            background: rgba(0,0,0,0.4);
+            background: -moz-linear-gradient(left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.26) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%);
+            background: -webkit-gradient(left top, right top, color-stop(0%, rgba(0,0,0,0.4)), color-stop(30%, rgba(0,0,0,0.26)), color-stop(60%, rgba(0,0,0,0.12)), color-stop(100%, rgba(0,0,0,0)));
+            background: -webkit-linear-gradient(left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.26) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%);
+            background: -o-linear-gradient(left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.26) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%);
+            background: -ms-linear-gradient(left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.26) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.26) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%);
+            background: var(--x-slideshow-navigation-background);
+            cursor: pointer;
+            pointer-events: all;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+        
+        :host > .overlay > .top > .navigation.right {
+            transform: rotate(180deg);
+        }
+        
+        :host > .overlay > .top > .navigation > iron-icon {
+            --iron-icon-width: var(--x-slideshow-chevron-width, 5em);
+            --iron-icon-height: var(--x-slideshow-chevron-height, 5em);
+            --iron-icon-fill-color: var(--x-slideshow-chevron-color, white);
+            --iron-icon-stroke-color: var(--x-slideshow-chevron-stroke, none);
+        }
+        
+        :host > .overlay > .bottom {
+            pointer-events: all;
+            background: var(--x-slideshow-overlay-background, rgba(0,0,0,.4));
+            width: 100%;
+            color: white;
+            padding-bottom: .5625em;
+        }
+        
+        :host > .overlay > .bottom > .textarea {
+            padding: .3125em .8125em;
+			color: (--x-slideshow-font-color, white);
+        }
+        
+        :host > .overlay > .bottom > .textarea > p {
+            font-size: (--x-slideshow-caption-size, 1em);
+        }
+		
+        :host > .overlay > .bottom > .textarea > h2 {
+            font-size: (--x-slideshow-caption-size, 1.5em);
+        }
+        
+		:host > .overlay > .bottom > x-dot-indicator {
+			@apply(--x-slideshow-indicator);
+		}
+        
+        </style>
+        <div class="bg">
+        </div>
+        <div class="overlay">
+            <div class="top">
+                <div class="navigation left" on-click="_back"><iron-icon icon="chevron-left"></iron-icon></div>
+                <div class="navigation right" on-click="_forward"><iron-icon icon="chevron-left"></iron-icon></div>
+            </div>
+            <div class="bottom">
+                <div class="textarea"><h2>{{_currentText.title}}</h2><p>{{_currentText.caption}}</p></div>
+                <x-dot-indicator dots="{{_totalSlides}}" current="{{currentSlide}}" changable></x-dot-indicator>
+            </div>
+        </div>
+        
+        <div class="container">
+        </div>
+        <content></content>
+    </template>
+</dom-module>
+
+<script>
+Polymer({
+    is: 'x-slideshow',
+    properties: {
+        startSlide: {
+            type: Number,
+            value: 0,
+        },
+    
+        _totalSlides: {
+            type: Number,
+        },
+        
+        currentSlide: {
+            type: Number,
+            reflectToAttribute: true,
+            observer: '_transitionSlide',
+            value: 0
+        },
+        
+        autoplay: {
+            type: Number,
+            value: 0
+        },
+		
+		//just for chrome if some script decides to dynamically resize the carousel, it updates.
+		update: {
+			type: Boolean,
+            reflectToAttribute: true,
+            observer: '_updateComponent',
+		},
+			
+        
+        
+        _autoplayTimer: {
+            type: Object,
+        },
+        
+        _attached: {
+            type: Boolean,
+            value: false,
+        },
+        
+        _currentText: {
+            type: Object,
+            value: {}
+        },
+        
+        _items: {
+            type: Array,
+            value: []
+        },
+        
+        _itemWrapper: {
+            value: function() {
+                var wrapper = document.createElement('div');
+                wrapper.className = "item-wrapper";
+                return wrapper;
+            }
+        },
+        
+        _transition: {
+            type: Array,
+            value: []
+        },
+    },
+    
+    ready: function() {
+        var items = this.getEffectiveChildren();
+        this._totalSlides = items.length;
+        items.forEach( function(elem, index, array) {
+            //create object
+            var object = {};
+            object.node = elem;
+            object.text = {};
+            object.text.caption = '\xa0';
+            object.text.title = '\xa0';
+            object.transition = 'fade';
+            object.duration = 300;
+            object.src = '';
+            if (elem.hasAttribute('x-slideshow-caption'))
+                object.text.caption = elem.getAttribute('x-slideshow-caption');
+            else if (elem.hasAttribute('alt'))
+                object.text.caption = elem.getAttribute('alt');
+            if (elem.hasAttribute('x-slideshow-title'))
+                object.text.title = elem.getAttribute('x-slideshow-title');
+            if (elem.hasAttribute('x-slideshow-transition')){
+                object.duration = elem.getAttribute('x-slideshow-transition').split(' ')[0];
+                object.transition = elem.getAttribute('x-slideshow-transition').split(' ')[1];
+            }
+            if (elem.hasAttribute('src')){
+                object.src = elem.getAttribute('src');
+                elem.removeAttribute('src');
+            }
+            //push to array
+            this.push('_items', object);
+            //move node to into wrapper then container. Add attributes as needed
+            var itemWrapper = this._itemWrapper.cloneNode();
+            itemWrapper.appendChild(elem);
+            Polymer.dom(this.$$('.container')).appendChild(itemWrapper);
+            
+            if (index == this.startSlide){
+                itemWrapper.style.order = -2;
+                this._currentText = object.text;
+                this.currentSlide = this.startSlide;
+            }
+        }, this);
+    },
+    
+    attached: function() {
+        this.listen(window, 'resize', '_updateComponent');
+        this._items.forEach( function(obj, index, array) {
+            if (!obj.node.hasAttribute('src') && obj.src != ''){
+                obj.node.setAttribute('src', obj.src);
+            }
+        }, this);
+        this._updateItemWrappers();
+        this._attached = true;
+		
+		//setAutoplayTimer
+		if (this.autoplay) {
+			this._autoplayTimer = setTimeout( function(self){
+				self._transitionSlide(self.currentSlide + 1, self.currentSlide);
+			}, this.autoplay * 1000, this);
+		}
+    },
+	
+    detached: function() {
+        this.unlisten(window, 'resize', '_updateComponent');
+	},
+    
+    _updateItemWrappers: function() {
+        this._items.forEach( function(obj, index, array) {
+            if (!obj.ratio)
+                obj.ratio = obj.node.offsetHeight*1.0 / obj.node.offsetWidth;
+            var wrapper = obj.node.parentNode;
+            wrapper.removeAttribute('fit');
+            wrapper.removeAttribute('fill');
+            wrapper.removeAttribute('stretch');
+            wrapper.removeAttribute('wide');
+            if (obj.node.hasAttribute('x-slideshow-type')){
+                var type = obj.node.getAttribute('x-slideshow-type').toLowerCase();
+                if (type == "fit")
+                    wrapper.setAttribute('fit', '');
+                else if (type == "fill")
+                    wrapper.setAttribute('fill', '');
+                else if (type == "stretch")
+                    wrapper.setAttribute('stretch', '');
+                if (obj.ratio < (wrapper.offsetHeight*1.0/wrapper.offsetWidth))
+                    wrapper.setAttribute('wide', '');
+            }
+        });
+    },
+    
+    _transitionSlide: function(newSlide, oldSlide){
+        if (!this._attached || newSlide == oldSlide) return;
+        if (newSlide >= this._totalSlides) newSlide = 0;
+        if (newSlide < 0) newSlide = this._totalSlides - 1;
+        if (newSlide != this.currentSlide){
+            this.currentSlide = newSlide;
+            return;
+        }
+        
+        //clear current transitions
+        this._transition.forEach(function(transition, index, array) {
+            transition.seek(transition.duration(), false);
+            transition.kill();
+        }, this);
+        this._transition = [];
+		
+		//clearAutoplayTimer
+		if (this.autoplay) {
+			clearTimeout(this._autoplayTimer);
+		}
+        
+        
+        if (false) {
+            //never runs. just filler for other transitions
+        } 
+        //Assume fade effect if everything else fails
+        else {
+            var dur = this._items[newSlide].duration / 1000.0;
+            var text = this.$$('.textarea');
+            var previous = this._items[oldSlide].node.parentNode;
+            var next = this._items[newSlide].node.parentNode;
+            
+            var textAnim = TweenLite.fromTo(text, dur/2, {css:{opacity:"1"}}, {css:{opacity:"0"}, onComplete:function(textFade, newSlide) {
+                this._currentText = this._items[newSlide].text;
+                textFade.reverse();
+            }, onCompleteParams:["{self}", newSlide], callbackScope: this, overwrite: true});
+            
+            previous.style.marginTop = (-next.offsetHeight) + "px";
+            previous.style.order = -1;
+            next.style.order = -2;
+            next.style.zIndex = -2;
+            var imgAnim = TweenLite.fromTo(previous, dur, {css:{opacity:"1"}}, {css:{opacity:"0"}, onComplete:function(previous, next) {
+                previous.removeAttribute('style');
+                next.style.zIndex = null;
+            }, onCompleteParams:[previous, next], overwrite: true});
+            
+            this.push('_transition', textAnim);
+            this.push('_transition', imgAnim);
+        }
+		
+		//setAutoplayTimer
+		if (this.autoplay) {
+			this._autoplayTimer = setTimeout( function(self){
+				self._transitionSlide(self.currentSlide + 1, self.currentSlide);
+			}, this.autoplay * 1000, this);
+		}
+    },
+	
+	_updateComponent: function() {
+		this.updateStyles();
+		this._updateItemWrappers();
+		//workaround for chrome flexbox bug.
+		this._items[this.currentSlide].node.parentNode.parentNode.style.display = "none";
+		this._items[this.currentSlide].node.parentNode.parentNode.offsetHeight;
+		this._items[this.currentSlide].node.parentNode.parentNode.style.display = "flex";
+		this.update = false;
+	},
+    
+    _forward: function(){
+        this._transitionSlide(this.currentSlide + 1, this.currentSlide);
+    },
+    _back: function(){
+        this._transitionSlide(this.currentSlide - 1, this.currentSlide);
+    }
+});
+</script>

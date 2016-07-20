@@ -1,0 +1,218 @@
+<!--
+simple dot indicator
+uses 0 index (starting at 0);
+if changable, fires a changed event with the current(new) index in the event as current. Also changes current attribute.
+
+dots="10" current="2" changable on-changed
+styles
+--x-dot-indicator-color-active
+--x-dot-indicator-color
+--x-dot-indicator-size
+--x-dot-indicator-opacity
+--x-dot-indicator-padding
+--x-dot-indicator-transition-duration
+
+if two nodes are present inside of the element, it will be used as the dots. The first node will be the general dot, the second node will become the active dot.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="x-dot-indicator">
+    <template>
+        <style>
+        :host > .container {
+            text-align: center;
+        }
+        
+        :host > .container > .dot-container {
+            display: inline-block;
+            font-size: var(--x-dot-indicator-size, 1em);
+            width: 1em;
+            height: 1em;
+            opacity: var(--x-dot-indicator-opacity, .95);
+            margin: var(--x-dot-indicator-padding, 0 .4em);
+            cursor: default;
+        }
+        
+        :host[changable] > .container > .dot-container:not([active]) {
+            cursor: pointer;
+        }
+        
+        :host > .container > .dot-container > * {
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+            outline: none;
+            overflow: visible;
+            transition: var(--x-dot-indicator-transition-duration, .2s) opacity;
+            opacity: .4
+        }
+        
+        :host > .container > .dot-container[active] > * {
+            opacity: 0;
+        }
+        
+        :host > .container > .dot-container > *.active {
+            transition: var(--x-dot-indicator-transition-duration, .2s) opacity;
+            opacity: 0;
+        }
+        
+        :host > .container > .dot-container[active] > *.active {
+            opacity: 1;
+        }
+        
+        
+        :host > .container > .dot-container > .dot-indicator::after {
+            content:"";
+            display: block;
+            width: 1em;
+            height: 1em;
+            border-radius: .5em;
+            box-sizing: border-box;
+            border: 1px solid rgba(0,0,0,.5);
+            background-color: var(--x-dot-indicator-color, white);
+        }
+        </style>
+        
+        <content></content>
+        <div class="container"></div>
+    </template>
+</dom-module>
+
+<script>
+Polymer({
+    is: 'x-dot-indicator',
+    properties: {
+        dots: {
+            type: Number,
+            value: 1,
+            observer: '_dotCountChanged',
+        },
+        
+        current: {
+            type: Number,
+            value: 0,
+            observer: '_currentDotChanged',
+            reflectToAttribute: true,
+            notify: true
+        },
+        
+        changable: {
+            type: Boolean,
+            value: false,
+        },
+        
+        
+        _attached: {
+            type: Boolean,
+            value: false,
+        },
+        
+        _lastDot: Number,
+        
+        _container: {
+            value: function() {
+                return this.$$('.container');
+            }
+        },
+        
+        _dotContainer: {
+            value: function() {
+                var container = document.createElement('div');
+                container.className = "dot-container";
+                return container;
+            }
+        },
+        
+        _dotIndicator: Object,
+        
+        _dotIndicatorActive: Object,
+    },
+    
+    ready: function() {
+        var parent = Polymer.dom(this.root);
+        var children = this.getEffectiveChildren();
+        var childCount = children.length;
+        this._dotIndicator = document.createElement('div');
+        this._dotIndicatorActive = document.createElement('div');
+        this._dotIndicatorActive.className += "active";
+        if (childCount > 1) {
+            this._dotIndicator.appendChild(children[0].cloneNode(true));
+            this._dotIndicatorActive.appendChild(children[1].cloneNode(true));
+        } else {
+            this._dotIndicator.className += " dot-indicator"
+            this._dotIndicatorActive.className += " dot-indicator"
+        }
+        this._dotContainer.appendChild(this._dotIndicator);
+        this._dotContainer.appendChild(this._dotIndicatorActive);
+        if (childCount > 0) {
+            while (parent.firstChild)
+                parent.removeChild(parent.firstChild);
+            parent.appendChild(this._container);
+        }
+    },
+    
+    attached: function() {
+        this._attached = true;
+        //tapped events
+        this.listen(document, 'tap', '_tapped');
+        this.createDots();
+    },
+    
+    createDots: function() {
+        //destroy first
+        while (this._container.firstChild)
+            this._container.removeChild(this._container.firstChild);
+
+        for (var i=0; i<this.dots; i++) {
+            var node = this._dotContainer.cloneNode(true);
+            if (i === this.current)
+                node.setAttribute('active', "");
+            Polymer.dom(this._container).appendChild(node);
+        }
+    },
+    
+    updateDots: function() {
+        var dots = Polymer.dom(this._container).children;
+        if (dots.length !== this.dots){
+            this.createDots();
+            return;
+        }
+        for (var i=0; i<this.dots; i++) {
+            if (dots[i].hasAttribute('active'))
+                dots[i].removeAttribute('active');
+            if (i === this.current){
+                dots[i].setAttribute('active', "");
+            }
+        }
+    },
+    
+    _dotCountChanged: function() {
+        if (!this._attached) return;
+        this.createDots();
+    },
+    
+    _currentDotChanged: function() {
+        if (!this._attached) return;
+        this.updateDots();
+    },
+    
+    _tapped: function(e) {
+        if (!this.changable) return;
+        
+        var target = e.target;
+        while(target != this && target != window.document && target != null) {
+            if (target.classList.contains('dot-container') && target.parentNode.parentNode === this){
+                var i=0;
+                for (; (target=target.previousSibling); i++);
+                this.current = i;
+                this.fire('changed', {current: i});
+                return;
+            }
+            target = target.parentNode;
+        }
+    }
+});
+</script>

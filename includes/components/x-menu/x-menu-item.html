@@ -184,6 +184,7 @@ Custom property                                  | Description                  
         display: none;
         width: inherit;
         background-color: white;
+		z-index:1000;
         @apply(--shadow-elevation-3dp);
       }
       
@@ -260,6 +261,7 @@ Custom property                                  | Description                  
         color: rgba(0,0,0,.54);
         padding-bottom: .5em;
         background-color: transparent;
+		cursor: default;
       }
       
       /* Subsection Style */
@@ -486,7 +488,7 @@ Polymer({
      * todo: document when complete
      */
     ready: function() {
-        var childCount = Polymer.dom(this).children.length;
+        var childCount = this.getEffectiveChildren().length;
         this._hasChildren = false;
         if (childCount > 0) {
             this._hasChildren = true;
@@ -585,7 +587,7 @@ Polymer({
      * Tapped listener. Checks to see where the tap is to set menu open or nah.
      */
     _tapped: function(e) {
-        if (!this._hasChildren) return;
+        if (!this._hasChildren || this.isTablet) return;
         
         var target = e.target;
         while(target != this && target != window.document && target != null) {
