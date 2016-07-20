@@ -6,8 +6,8 @@ autoplay="interval_in_seconds" (if not defined, autoplay disabled)
 width: 1280px
 height: 720px
 font-size: inherit
---x-slideshow-chevron-width: 2em
---x-slideshow-chevron-height: 2em
+--x-slideshow-chevron-width: 5em
+--x-slideshow-chevron-height: 5em
 --x-slideshow-title-size: 1.5em
 --x-slideshow-caption-size: 1em
 --x-slideshow-background: #1a1a1a
@@ -145,15 +145,15 @@ types of transitions: fade
         
         :host > .overlay > .bottom > .textarea {
             padding: .3125em .8125em;
-			color: (--x-slideshow-font-color, white);
+			color: var(--x-slideshow-font-color, white);
         }
         
         :host > .overlay > .bottom > .textarea > p {
-            font-size: (--x-slideshow-caption-size, 1em);
+            font-size: var(--x-slideshow-caption-size, 1em);
         }
 		
         :host > .overlay > .bottom > .textarea > h2 {
-            font-size: (--x-slideshow-caption-size, 1.5em);
+            font-size: var(--x-slideshow-caption-size, 1.5em);
         }
         
 		:host > .overlay > .bottom > x-dot-indicator {
